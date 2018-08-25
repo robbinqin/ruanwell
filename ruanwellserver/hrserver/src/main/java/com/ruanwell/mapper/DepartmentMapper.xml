@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanwell.mapper.DepartmentMapper">
+    <resultMap id="BaserResultMap" type="com.ruanwell.bean.Department">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parentId"/>
+        <result property="depPath" column="depPath"/>
+        <result property="enabled" column="enabled"/>
+        <result property="isParent" column="isParent"/>
+        <collection property="children" ofType="com.ruanwell.bean.Department" select="com.ruanwell.mapper.DepartmentMapper.getDepartmentsByParentId" column="id"></collection>
+    </resultMap>
+    <select id="getDepartmentsByParentId" parameterType="java.lang.Long" resultMap="BaserResultMap">
+        select * from department WHERE parentId=#{pid};
+    </select>
+    <select id="addDep" statementType="CALLABLE">
+        call addDep(#{dep.name,mode=IN,jdbcType=VARCHAR},#{dep.parentId,mode=IN,jdbcType=BIGINT},#{dep.enabled,mode=IN,jdbcType=BIT},#{dep.result,mode=OUT,jdbcType=INTEGER},#{dep.id,mode=OUT,jdbcType=BIGINT})
+    </select>
+    <select id="allDeps" resultType="com.ruanwell.bean.Department">
+        select * from department;
+    </select>
+    <select id="deleteDepById" statementType="CALLABLE">
+        call deleteDep(#{dep.id,mode=IN,jdbcType=BIGINT},#{dep.result,mode=OUT,jdbcType=INTEGER})
+    </select>
+</mapper>

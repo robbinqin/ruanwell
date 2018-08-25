@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanwell.mapper.PositionMapper">
+    <select id="getAllPositions" resultType="com.ruanwell.bean.Position">
+        select * from position WHERE enabled=true;
+    </select>
+    <insert id="addPosition" parameterType="java.lang.String">
+        INSERT INTO position SET name=#{name}
+    </insert>
+    <delete id="deletePositionByIds">
+        DELETE FROM position WHERE id IN
+        <foreach collection="ids" separator="," close=")" open="(" item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updatePositionById">
+        UPDATE position set name=#{name} WHERE id=#{id}
+    </update>
+</mapper>

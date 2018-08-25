@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanwell.mapper.HrMapper">
+    <select id="loadUserByUsername" parameterType="java.lang.String" resultType="com.ruanwell.bean.Hr">
+        select * from hr WHERE username=#{username};
+    </select>
+    <select id="getHrRolesByHrId" parameterType="java.lang.Long" resultType="com.ruanwell.bean.Role">
+        select r.* from hr_role hrr,role r where hrr.`hrid`=#{hrid} and hrr.`rid`=r.`id`
+    </select>
+    <resultMap id="BaseResultMap" type="com.ruanwell.bean.Hr">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="CHAR" />
+        <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="enabled" property="enabled" jdbcType="BIT" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="userface" property="userface" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <collection property="roles" ofType="com.ruanwell.bean.Role">
+            <id column="rid" property="id" jdbcType="INTEGER" />
+            <result column="rname" property="name" jdbcType="VARCHAR" />
+            <result column="rnameZh" property="nameZh" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+    <select id="getHrByKeywords" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select h.*,r.`id` as rid,r.`name` as rname,r.`nameZh` as rnameZh from hr h left join hr_role hrr on h.`id`=hrr.`hrid` left join role r on hrr.`rid`=r.`id` where r.`name`!='ROLE_admin' and h.`name` like concat('%',#{keywords},'%') limit 10
+    </select>
+    <update id="updateHrStateById">
+        UPDATE hr set enabled=#{enabled} WHERE id=#{hrid}
+    </update>
+    <delete id="deleteRolesByHrId" parameterType="java.lang.Long">
+        DELETE FROM hr_role WHERE hrid=#{hrid}
+    </delete>
+    <insert id="updateHrRoles">
+        INSERT INTO hr_role(hrid,rid) VALUES
+        <foreach collection="roles" item="role" separator=",">
+            (#{hrid},#{role})
+        </foreach>
+    </insert>
+</mapper>
